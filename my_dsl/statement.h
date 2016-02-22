@@ -3,6 +3,7 @@
 
 #include "ast.h"
 #include "result_type.h"
+#include "block.h"
 
 class Expression;
 class Statement : public Ast
@@ -24,8 +25,8 @@ public:
         STATEMENT_TYPE_COUNT_PLUS_1
     };
     Statement();
-    Result_Type statement_exec();
     virtual ~Statement();
+    Result_Type statement_exec();
 
     Statement_Type type() const;
 private:
@@ -42,20 +43,22 @@ private:
 };
 
 
-class Block
-{
-public:
-private:
-    Statement_List*  _stmt_list;
-};
-
 class Elsif_Statement
 {
 public:
 private:
     Expression     *_condition;
     Block       *_block;
-    Elsif_Statement  *_next;
+};
+
+class Elsif_List
+{
+public:
+    Elsif_List();
+
+    void push_back(Elsif_Statement* e);
+private:
+    std::list<Elsif_Statement*> elsif_list;
 };
 
 class If_Statement : public Statement
@@ -71,21 +74,30 @@ private:
 class While_Statement : public Statement
 {
 public:
-    While_Statement();
+    While_Statement(string& l, Expression* cond, Block* b)
+        : Statement(WHILE_STATEMENT), label(l), condition(cond), block(b)
+    {
+    }
 
     virtual ~While_Statement();
-
-private:
     void release();
-    Expression*    _condition;
-    Block*      _block;
+private:
+    string      label;
+    Expression* condition;
+    Block*      block;
 };
 
 
 class For_Statement : public Statement
 {
 public:
+    For_Statement(string& l, Expression* init, Expression* cond, Expression* post, Block* b)
+        : Statement(FOR_STATEMENT), label(l), _init(init), _condition(cond), _post(post), _block(b)
+    {
+    }
+
 private:
+    string      label;
     Expression  *_init;
     Expression  *_condition;
     Expression  *_post;
@@ -95,6 +107,11 @@ private:
 class Return_Statement : public Statement
 {
 public:
+    Return_Statement(Expression* rtn)
+        : Statement(RETURN_STATEMENT), _return_value(rtn)
+    {
+    }
+
 private:
     Expression *_return_value;
 } ;
@@ -102,15 +119,24 @@ private:
 class Break_Statement : public Statement
 {
 public:
+    Break_Statement(std::string& l)
+        : Statement(BREAK_STATEMENT), label(l)
+    {
+    }
+
 private:
-    char        *label;
+    std::string label;
 };
 
 class Continue_Statement : public Statement
 {
 public:
+    Continue_Statement(std::string& l)
+        : Statement(CONTINUE_STATEMENT), label(l)
+    {
+    }
 private:
-    char        *label;
+    std::string label;
 };
 
 typedef struct IdentifierList_tag {

@@ -13,6 +13,7 @@ public:
         DOUBLE_EXPRESSION,
         STRING_EXPRESSION,
         IDENTIFIER_EXPRESSION,
+        COMMA_EXPRESSION,
         ASSIGN_EXPRESSION,
         ADD_EXPRESSION,
         SUB_EXPRESSION,
@@ -46,7 +47,11 @@ private:
 class Bool_Expression : public Expression
 {
 public:
-    Bool_Expression();
+    Bool_Expression(bool v)
+        : Expression(BOOLEAN_EXPRESSION),_val(v)
+    {
+    }
+
     Bool_Expression(bool& val);
     ~Bool_Expression();
 
@@ -71,7 +76,7 @@ class Double_Expression : public Expression
 {
 public:
     Double_Expression();
-    Double_Expression(double* val);
+    Double_Expression(double val);
     ~Double_Expression();
 
 private:
@@ -96,24 +101,79 @@ private:
     std::string     _name;
 };
 
+enum Assignment_Operator
+{
+    NORMAL_ASSIGN = 1,
+    ADD_ASSIGN,
+    SUB_ASSIGN,
+    MUL_ASSIGN,
+    DIV_ASSIGN,
+    MOD_ASSIGN
+} ;
+
 class Assign_Expression : public Expression
 {
 public:
+    Assign_Expression( Assignment_Operator _o, Expression* le, Expression* opd)
+        : Expression(ASSIGN_EXPRESSION), _operator(_o), left(le), operand(opd)
+    {
+    }
 
 private:
-    char        *_variable;
-    Expression     *_operand;
+    Assignment_Operator _operator;
+    Expression     *left;
+    Expression* operand;
+};
+
+class Comma_Expression : public Expression
+{
+public:
+    Comma_Expression(Expression* le, Expression* re)
+        : Expression(COMMA_EXPRESSION), left(le), right(re)
+    {
+    }
+
+private:
+    Expression* left;
+    Expression* right;
 };
 
 class Binary_Expression : public Expression
 {
 public:
+    Binary_Expression(Expression_Type type, Expression* le, Expression* re)
+        : Expression(type), left(le), right(re)
+    {
+    }
 
 private:
     Expression  *left;
     Expression  *right;
 };
 
+class Minus_Expression : public Expression
+{
+public:
+    Minus_Expression(Expression* e)
+        : Expression(MINUS_EXPRESSION), exp(e)
+    {
+    }
+
+private:
+    Expression* exp;
+};
+
+class Logical_Not_Expression : public Expression
+{
+public:
+    Logical_Not_Expression(Expression* e)
+        : Expression(Logical_Not_Expression), exp(e)
+    {
+    }
+
+private:
+    Expression* exp;
+};
 
 class Argument_List : public Expression
 {
@@ -127,9 +187,23 @@ private:
 class Function_Call_Expression : public Expression
 {
 public:
+    Function_Call_Expression(Expression* f, );
 private:
-    char *_identifier;
+    Expression          *function;
     Argument_List        *argument;
+};
+
+
+class IncrementOrDecrement_Expression : public Expression
+{
+public:
+    IncrementOrDecrement_Expression(Expression_Type t,Expression* e)
+        : Expression(t), operand(e)
+    {
+    }
+
+private:
+    Expression* operand;
 };
 
 #endif // EXPRESSION_H

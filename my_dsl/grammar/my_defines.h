@@ -6,9 +6,21 @@
 #include <cassert>
 #include <cstdio>
 
+#include "interpretor.h"
+#include "expression.h"
 
-struct MY_DSL_Type{
-
+struct MY_DSL_Type
+{
+    string               identifier;
+    ParameterList       *parameter_list;
+    ArgumentList        *argument_list;
+    Expression          *expression;
+    Statement           *statement;
+    StatementList       *statement_list;
+    Block               *block;
+    Elsif               *elsif;
+    Assignment_Operator  assignment_operator;
+    Value_Type         type_specifier;
 };
 
 #ifndef YY_TYPEDEF_YY_SCANNER_T
@@ -25,8 +37,8 @@ typedef void *yyscan_t;
 extern int my_dsllineno;
 
 int my_dsllex(YYSTYPE*, yyscan_t);
-void my_dslerror(yyscan_t, Telnet_Handler *, const char *);  /* prints grammar violation message */
-int my_dslparse(yyscan_t, Telnet_Handler *);
-int my_dsl_do_parse(const char *, int, Telnet_Handler *);
+void my_dslerror(yyscan_t, Interpretor *, const char *);  /* prints grammar violation message */
+int my_dslparse(yyscan_t, Interpretor *);
+int my_dsl_do_parse(const char *, int, Interpretor *);
 
 #endif // CONF_DEFINES_H

@@ -2,16 +2,16 @@
 #define VALUE_H
 #include <iostream>
 
+enum Value_Type
+{
+    BOOL,
+    INT,
+    DOUBLE,
+    STRING
+};
+
 class Value
 {
-    enum Value_Type
-    {
-        BOOL,
-        INT,
-        DOUBLE,
-        STRING
-    };
-
 public:
     Value();
     Value(Value_Type type);

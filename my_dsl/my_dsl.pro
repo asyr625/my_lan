@@ -30,7 +30,11 @@ HEADERS += my_dsl.h\
     result_type.h \
     interpretor.h \
     variable.h \
-    function.h
+    function.h \
+    block.h \
+    parameter.h \
+    expression_visit.h \
+    statement_visit.h
 
 SOURCES += my_dsl.cpp \
     value.cpp \
@@ -40,7 +44,11 @@ SOURCES += my_dsl.cpp \
     result_type.cpp \
     interpretor.cpp \
     variable.cpp \
-    function.cpp
+    function.cpp \
+    block.cpp \
+    parameter.cpp \
+    expression_visit.cpp \
+    statement_visit.cpp
 
 LEXSOURCES += \
     grammar/my_dsl.l

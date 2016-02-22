@@ -4,6 +4,10 @@
 #include <string>
 #include <list>
 
+#include "value.h"
+#include "block.h"
+#include "parameter.h"
+
 enum Function_Type
 {
     Interprat_Function,
@@ -13,21 +17,24 @@ enum Function_Type
 class Function
 {
 public:
-    Function(Function_Type t, std::string& n);
+    Function(Function_Type t, Value_Type rt, std::string& n);
     virtual ~Function();
 
     std::string& get_name();
 private:
-    std::string name;
     Function_Type type;
+    Value_Type return_type;
+    std::string name;
 };
 
 
 class Interprator_Function : public Function
 {
-
+public:
+    Interprator_Function(Value_Type rt, std::string& n, std::list<Parameter*>* paraml, Block* b );
 private:
-
+    std::list<Parameter>* param_list;
+    Block* block;
 };
 
 class Native_Function : public Function

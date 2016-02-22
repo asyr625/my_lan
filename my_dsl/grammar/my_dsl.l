@@ -23,105 +23,61 @@ WS  [ \t\v\f\r\n]+
 #include "my_dsl_yacc.h"
 %}
 
-EXP     ([Ee][-+]?[0-9]+)
-ipreg   ([0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3})
+
+%%
+"if"           return IF;
+"else"         return ELSE;
+"elsif"        return ELSIF;
+"while"        return WHILE;
+"for"          return FOR;
+"foreach"      return FOREACH;
+"return"       return RETURN_T;
+"break"        return BREAK;
+"continue"     return CONTINUE;
+"true"         return TRUE_T;
+"false"        return FALSE_T;
+"try"          return TRY;
+"catch"        return CATCH;
+"finally"      return FINALLY;
+"throw"        return THROW;
+"boolean"      return BOOLEAN_T;
+"int"          return INT_T;
+"double"       return DOUBLE_T;
+"string"       return STRING_T;
+"("            return LP;
+")"            return RP;
+"{"            return LC;
+"}"            return RC;
+";"            return SEMICOLON;
+":"            return COLON;
+","            return COMMA;
+"&&"           return LOGICAL_AND;
+"||"           return LOGICAL_OR;
+"="            return ASSIGN_T;
+"=="           return EQ;
+"!="           return NE;
+">"            return GT;
+">="           return GE;
+"<"            return LT;
+"<="           return LE;
+"+"            return ADD;
+"-"            return SUB;
+"*"            return MUL;
+"/"            return DIV;
+"%"            return MOD;
+"+="           return ADD_ASSIGN_T;
+"-="           return SUB_ASSIGN_T;
+"*="           return MUL_ASSIGN_T;
+"/="           return DIV_ASSIGN_T;
+"%="           return MOD_ASSIGN_T;
+"++"           return INCREMENT;
+"--"           return DECREMENT;
+"!"            return EXCLAMATION;
+"."            return DOT;
 
 %%
 
-"quit"|"QUIT"|"Q"|"q"                   { return QUIT; }
-
-"<begin>"                               { return BEGIN_INPUT; }
-"<end>"                                 { return END_INPUT; }
-
-"show"|"SHOW"                           { return SHOW; }
-"scope"|"SCOPE"                         { return SCOPE;  }
-
-"rpc"|"RPC"                             { return RPC; }
-"print"                                 { return PRINT; }
-
-"c::"|"C::"                             { return C_CALL; }
-
-"double"                                { return DOUBLE; }
-"int"                                   { return INT; }
-"return"                                { return RETURN; }
-"void"                                  { return VOID; }
-"string"                                { return STRING; }
-
-
-"if"                                    { return IF; }
-"else"                                  { return ELSE; }
-"elsif"                                 { return ELSIF; }
-"while"                                 { return WHILE; }
-"for"                                   { return FOR; }
-"foreach"                               { return FOREACH; }
-"break"                                 { return BREAK; }
-"continue"                              { return CONTINUE; }
-"true"                                  { return TRUE_T; }
-"false"                                 { return FALSE_T; }
-"try"                                   { return TRY; }
-"catch"                                 { return CATCH; }
-"finally"                               { return FINALLY; }
-"throw"                                 { return THROW; }
-
-
-"("                                     { return LP; }
-")"                                     { return RP; }
-"{"                                     { return LC; }
-"}"                                     { return RC; }
-";"                                     { return SEMICOLON; }
-":"                                     { return COLON; }
-","                                     { return COMMA; }
-"&&"                                    { return LOGICAL_AND; }
-"||"                                    { return LOGICAL_OR; }
-"="                                     { return ASSIGN_T; }
-"=="                                    { return EQ; }
-"!="                                    { return NE; }
-">"                                     { return GT; }
-">="                                    { return GE; }
-"<"                                     { return LT; }
-"<="                                    { return LE; }
-"+"                                     { return ADD; }
-"-"                                     { return SUB; }
-"*"                                     { return MUL; }
-"/"                                     { return DIV; }
-"%"                                     { return MOD; }
-"+="                                    { return ADD_ASSIGN_T; }
-"-="                                    { return SUB_ASSIGN_T; }
-"*="                                    { return MUL_ASSIGN_T; }
-"/="                                    { return DIV_ASSIGN_T; }
-"%="                                    { return MOD_ASSIGN_T; }
-"++"                                    { return INCREMENT; }
-"--"                                    { return DECREMENT; }
-"!"                                     { return EXCLAMATION; }
-"."                                     { return DOT; }
-
-
-[A-Za-z_][A-Za-z_0-9]*                  { yylval->str = yytext; return IDENTIFIER; }
-
-[1-9][0-9]*                             { yylval->ival = atoi(yytext); return INT_LITERAL; }
-
-[0-9]+\.[0-9]+                          { yylval->dval = atof(yytext); return DOUBLE_LITERAL; }
-
-[\'\"][^,;=><\"\']+[\'\"]  {  *(yytext+strlen(yytext)-1) = '\0';  yylval->str = 1+yytext; return STRING_STR; }
-
-"~"|"^"|"|"|"?"               { return *yytext; }
-
-{L}{A}*                       { yylval->str = yytext; return NAME; }
-[0-9]+                        { yylval->ival = atoi(yytext); return INUM; }
-{ipreg}                       { yylval->str = yytext; return IP_ADDR; }
-{WS}                          {ECHO;}
-.                             {}
-
-[0-9]+"."[0-9]*{EXP}? |
-"."?[0-9]+{EXP}?                        { yylval->dval = atof(yytext); return DNUM; }
-
-
-({SP}?\"([^"\\\n]|{ES})*\"{WS}*)+       { yylval->str = yytext; return STRING_LITERAL; }
-
-
-%%
-
-int my_dsl_do_parse(const char *buf, int len, Telnet_Handler *param)
+int my_dsl_do_parse(const char *buf, int len, Interpretor *param)
 {
     int rc = 0;
     yyscan_t scanner;
